@@ -1,0 +1,54 @@
+services:
+  db:
+    container_name: tasks-db
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+      POSTGRES_DB: appdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - tasks-net
+    ports:
+      - "5432:5432"
+
+  backend:
+    container_name: tasks-be
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+      POSTGRES_DB: appdb
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    depends_on:
+      - db
+    networks:
+      - tasks-net
+    ports:
+      - "4000:4000"
+
+  frontend:
+    container_name: tasks-fe
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - tasks-net
+    ports:
+      - "5173:80"
+
+networks:
+  tasks-net:
+    driver: bridge
+
+volumes:
+  db_data:
