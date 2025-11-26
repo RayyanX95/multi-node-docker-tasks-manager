@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import { API_BASE_URL } from "./constants";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -16,7 +17,7 @@ function App() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch("http://localhost:4000/api/tasks");
+      const response = await fetch(`${API_BASE_URL}/api/tasks`);
       if (!response.ok) throw new Error("Failed to fetch tasks");
       const data = await response.json();
       setTasks(data);
@@ -34,7 +35,7 @@ function App() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch("http://localhost:4000/api/tasks", {
+      const response = await fetch(`${API_BASE_URL}/api/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
