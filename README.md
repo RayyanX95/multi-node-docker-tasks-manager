@@ -77,6 +77,33 @@ npm run dev
 
 Open your browser at `http://localhost:5173` to use the application.
 
+## Docker Swarm Multi-Node Deployment
+
+For production deployment on a Docker Swarm cluster with multiple nodes:
+
+### Quick Start (Automated):
+
+```bash
+# Setup entire cluster automatically
+./setup-swarm.sh
+
+# Deploy the stack
+multipass shell manager1
+docker stack deploy -c docker-stack.yml myapp
+```
+
+### Manual Setup:
+
+See [SWARM_DEPLOYMENT.md](./SWARM_DEPLOYMENT.md) for detailed step-by-step instructions.
+
+### Cleanup:
+
+```bash
+./cleanup-swarm.sh
+```
+
+---
+
 ## API Endpoints
 
 -   `GET /api/tasks`: Retrieve all tasks.

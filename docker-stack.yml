@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+      POSTGRES_DB: appdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - tasks-net
+    ports:
+      - "5432:5432"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+  backend:
+    image: rayyanx95/tasks-be
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+      POSTGRES_DB: appdb
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    networks:
+      - tasks-net
+    ports:
+      - "4000:4000"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+  frontend:
+    image: rayyanx95/tasks-fe
+    networks:
+      - tasks-net
+    ports:
+      - "80:80"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+networks:
+  tasks-net:
+    driver: overlay
+
+volumes:
+  db_data:
